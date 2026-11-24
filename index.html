@@ -1,0 +1,1156 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Tự lái AB 160 vào phố ăn đêm 3D. Một lần tấp, một bữa ăn.">
+<title>Ghé Hẻm · Phố ăn đêm</title>
+<style>
+:root{color-scheme:dark;--ink:#10191a;--paper:#fff1d4;--muted:#a8b8af;--lime:#dcfa91;--rust:#ff895b;--line:#52615a66;--panel:#101c1bea}
+*{box-sizing:border-box}body{margin:0;background:#111c21;color:var(--paper);font:16px/1.45 system-ui,sans-serif;overflow:hidden}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:4px}[hidden]{display:none!important}
+#scene{width:100%;height:100%;position:absolute;inset:0;display:block;touch-action:none}#shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#0c1819e8 0%,#0c1819b3 29%,#0c181914 73%),linear-gradient(0deg,#0c171aac,transparent 29%)}body.playing #shade{background:linear-gradient(0deg,#091618aa,transparent 25%),linear-gradient(180deg,#08131480,transparent 21%)}
+.corner{position:absolute;inset:24px 28px auto;display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:none}.corner>*{pointer-events:auto}.badge{display:flex;gap:10px;align-items:center;letter-spacing:.1em;font-weight:850;font-size:.78rem;text-transform:uppercase}.icon{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;color:var(--ink);background:var(--lime);font-size:1rem}.tools{display:flex;gap:8px}.quiet,.choice,.branch,.pedal{color:var(--paper);border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:9px 13px;font-weight:700}.quiet:hover,.choice:hover,.branch:hover,.pedal:hover{border-color:var(--lime)}.quiet{font-size:.85rem}
+.start{position:absolute;left:clamp(24px,8vw,145px);top:50%;transform:translateY(-47%);width:min(420px,calc(100% - 48px));max-height:calc(100% - 85px);overflow:auto;padding:6px 5px 12px 0}.sup{color:var(--rust);font-size:.8rem;font-weight:850;letter-spacing:.15em;text-transform:uppercase}.start h1{font-size:clamp(3.9rem,9vw,8.6rem);line-height:.83;letter-spacing:-.095em;margin:16px 0 21px;font-weight:950;text-shadow:0 5px 35px #0009}.start p{max-width:320px;color:#e5ddca;margin:0 0 25px}.form{max-width:365px}.field{display:block;font-weight:760;font-size:.88rem;margin:0 0 7px}.textbox{background:#142524eb;border:1px solid #76887b;color:var(--paper);border-radius:9px;padding:12px 13px;width:100%}.gender{display:flex;gap:8px;margin-bottom:14px}.choice{flex:1}.choice[aria-pressed=true],.branch.on{background:#dcfa9126;border-color:var(--lime);color:var(--lime)}.field.gender-label{margin-top:13px}.primary{background:var(--lime);color:#17231a;border:0;border-radius:9px;padding:13px 18px;min-height:47px;font-weight:900}.primary:hover{background:#f0ffbc}.form .primary{width:100%}
+.hud{position:absolute;inset:74px 26px auto;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}.glass{background:var(--panel);border:1px solid var(--line);border-radius:13px;box-shadow:0 12px 32px #0004}.ride{padding:12px 15px;min-width:148px}.ride strong{display:block;font-size:1rem}.ride small{color:var(--muted);display:block}.speed{font-weight:900;font-size:1.65rem;color:var(--lime);line-height:1.1;margin-top:8px}.speed small{display:inline;font-size:.69rem;margin-left:4px}.mapbox{padding:8px}.mapbox canvas{display:block;width:156px;height:146px}.mapbox.expanded canvas{width:min(385px,70vw);height:min(385px,52vh)}.mapbox button{pointer-events:auto;width:100%;margin-top:5px;padding:5px 8px}.mapkey{font-size:.7rem;color:#d8dbc9;text-align:center}
+.dock{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 24px));text-align:center;pointer-events:none}.dock>*{pointer-events:auto}.msg{color:var(--lime);font-weight:800;text-shadow:0 2px 6px black;min-height:26px}.action{padding:12px 14px;margin-bottom:8px}.action h2{margin:0;font-size:1.04rem}.action p{margin:4px 0 8px;font-size:.88rem;color:#dfdfcb}.branches{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}.branch{font-size:.79rem;padding:7px 9px}.companions{padding:0;border:0;margin:0 0 12px}.companions legend{font-size:.88rem;font-weight:760;margin:0 0 6px}.companion-options{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px}.companion-options .choice{font-size:.8rem;padding:5px 8px;white-space:nowrap;flex:1 0 auto}#rearField{margin-top:8px}#rearField input{padding:7px 8px}.start h1{font-size:clamp(3.25rem,8.4vw,7.1rem)}.start p{margin-bottom:15px}.start{scrollbar-width:thin}
+#worldLabels{position:absolute;inset:0;pointer-events:none;overflow:hidden}.world-tag,.speech-tag{position:absolute;text-align:center;transform:translate(-50%,-100%);border-radius:8px;box-shadow:0 2px 12px #0008;font-weight:760}.world-tag{color:var(--lime);background:#101e1cf2;border:1px solid #d2f28470;padding:3px 8px;font-size:.79rem;white-space:nowrap;max-width:42vw;overflow:hidden;text-overflow:ellipsis}.rear-tag{color:#ffdcac;border-color:#f8bb805e}.speech-tag{text-align:left;background:#fff2d4;color:#1f2925;border:1px solid #f9cf8c;padding:9px 12px;width:max-content;max-width:min(285px,76vw);font-size:.88rem}.speech-tag strong{display:block;color:#6e4226;font-size:.75rem}.speech-tag:after{content:"";position:absolute;bottom:-7px;left:var(--tail,50%);width:12px;height:12px;background:#fff2d4;transform:translateX(-50%) rotate(45deg);border-right:1px solid #f9cf8c;border-bottom:1px solid #f9cf8c}#mealControls{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:2}
+.hint{font-size:.78rem;color:#fff3d4;text-shadow:0 2px 5px black}.pedals{position:absolute;inset:auto 26px 23px auto;display:flex;gap:7px;touch-action:none}.pedal{user-select:none;-webkit-user-select:none;min-width:55px}.pedal.active{background:var(--lime);color:#17231a}
+.overlay{position:absolute;inset:0;background:#071512b0;display:grid;place-items:center;padding:16px;overflow:auto}.modal{width:min(510px,100%);padding:clamp(20px,5vw,35px);max-height:100%;overflow:auto}.modal h2{letter-spacing:-.05em;font-size:clamp(1.75rem,6vw,3.2rem);line-height:1;margin:8px 0 12px}.modal p{margin:9px 0;color:#dddccb}.modal .sup{margin-top:2px}.result-grid{display:flex;align-items:center;gap:14px}.score{font-weight:950;color:var(--lime);font-size:2.45rem;letter-spacing:-.06em}.result-food{font-size:3.1rem}.receipt{border-top:1px dashed #71867a;margin-top:14px;padding-top:12px}.receipt p{font-size:.87rem;margin:6px 0}.result-map{width:100%;display:block;height:112px;background:#0d1515;border-radius:10px;margin:12px 0}#memory{position:absolute;inset:auto 20px 30px;width:min(475px,calc(100% - 40px));margin:auto;padding:17px;text-align:center}#memory h2{margin:2px 0 10px;font-size:1.3rem}.result-buttons{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.result-buttons button{flex:1}.modal kbd{color:var(--lime)}#reveal{color:#ffd3a8}
+@media(max-width:850px){.dock{bottom:79px}.pedals{bottom:17px;right:50%;transform:translateX(50%)}}
+@media(max-width:530px){.corner{inset:12px 12px auto}.badge{font-size:.67rem;gap:6px}.icon{width:30px;height:30px}.quiet{padding:7px 8px}.hud{inset:56px 12px auto}.ride{min-width:0;padding:7px 10px}.mapbox{padding:5px}.mapbox canvas{width:104px;height:97px}.mapkey{display:none}.start{left:20px;width:calc(100% - 40px)}.start h1{margin:13px 0 15px}.start p{margin-bottom:14px}.hint{display:none}.dock{bottom:65px}#shade{background:linear-gradient(90deg,#0c1819f0,#0c18198a),linear-gradient(0deg,#0c171ac8,transparent 38%)}}
+</style>
+</head>
+<body>
+<canvas id="scene" aria-label="Phố ăn đêm 3D"></canvas><div id="shade"></div>
+<div id="worldLabels"><div id="driverTag" class="world-tag" hidden></div><div id="rearTag" class="world-tag rear-tag" hidden></div><div id="speechTag" class="speech-tag" role="status" aria-live="polite" hidden><strong id="speaker"></strong><span id="speechLine"></span></div></div>
+<div id="mealControls" hidden><button id="nextLine" class="primary">Tiếp lời</button></div>
+<header class="corner">
+ <div class="badge"><span class="icon">✦</span><span>Ghé Hẻm · Phố ăn đêm</span></div>
+ <div class="tools"><button class="quiet" id="sound" aria-pressed="false">Bật tiếng</button><button class="quiet" id="help">Cách chơi</button></div>
+</header>
+<main id="start" class="start">
+ <div class="sup">Game lái xe khám phá 3D</div>
+ <h1>Ghé<br>Hẻm.</h1>
+ <p>Lên AB 160, len qua hẻm chợ, chung cư cũ và bờ kè tìm một bữa khuya.</p>
+ <form class="form" id="profile">
+  <label class="field" for="name">Tên nhân vật</label><input class="textbox" id="name" maxlength="32" placeholder="Nhập tên bạn" autocomplete="off">
+  <div class="field gender-label">Nhân vật</div>
+  <div class="gender" role="group" aria-label="Giới tính nhân vật"><button class="choice" type="button" data-gender="nam" aria-pressed="true">Nam</button><button class="choice" type="button" data-gender="nu" aria-pressed="false">Nữ</button></div>
+  <fieldset class="companions"><legend>Người ngồi sau</legend>
+   <div class="companion-options" id="companionOptions"></div>
+   <div id="rearField" hidden><label class="field" for="rearName">Tên bạn đồng hành</label><input class="textbox" id="rearName" maxlength="24" autocomplete="off"></div>
+  </fieldset>
+  <button class="primary" type="submit">Nổ máy</button>
+ </form>
+</main>
+<section class="hud" id="hud" hidden>
+ <div class="ride glass"><strong id="riderName"></strong><small id="roadName"></small><div class="speed"><span id="speed">0</span><small>km/h</small></div></div>
+ <div class="mapbox glass"><canvas id="minimap" width="310" height="292" aria-label="Bản đồ khu phố"></canvas><div class="mapkey">Cam · đường đã qua</div><button class="quiet" id="mapZoom" aria-pressed="false">Xem cả khu</button></div>
+</section>
+<div id="controls" hidden>
+ <div class="dock"><div class="msg" id="msg" aria-live="polite"></div><div id="action" class="action glass" hidden><h2 id="actionTitle"></h2><p id="actionDesc"></p><div id="options" class="branches"></div></div><div class="hint">W / ↑ ga · S / ↓ phanh · A D / ← → rẽ · E ghé ăn · Kéo để nhìn quanh</div></div>
+ <div class="pedals" aria-label="Điều khiển cảm ứng"><button class="pedal" data-key="a" aria-label="Trái">←</button><button class="pedal" data-key="s">Phanh</button><button class="pedal" data-key="w">Ga</button><button class="pedal" data-key="d" aria-label="Phải">→</button></div>
+</div>
+<div class="overlay" id="instructions" hidden>
+ <section class="modal glass" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><div class="sup">Luật trong hẻm</div><h2 id="helpTitle">Một lượt, một bữa.</h2>
+ <p>Giữ <kbd>W</kbd> để lên ga, <kbd>S</kbd> để phanh. Dùng <kbd>A</kbd>/<kbd>D</kbd> để lách nhẹ trong làn. Khi thấy bảng ngã rẽ, bấm phím tương ứng hoặc chạm tên đường, rồi lên ga để vào đường đã chọn.</p>
+ <p>Kéo cảnh để nhìn quanh. Lời của chủ quán và khách hiện trên đầu họ. Khi ở trước quán, bấm <kbd>E</kbd> hoặc chạm <strong>Tấp vô ăn</strong>. Dấu hiệu ngoài quán gợi ý độ ngon. Điểm thật hiện sau khi ăn.</p>
+ <p>Đường đã qua khóa theo cả hai hướng. Bạn có thể gặp lại một giao lộ bằng những đoạn đường mới. Bản đồ tô cam đoạn đã đi. Tới biển lối ra, hoặc khi mọi đoạn nối đều đã khóa, chuyến đi kết thúc.</p><button class="primary" id="closeHelp">Hiểu rồi</button></section>
+</div>
+<div class="overlay" id="results" hidden>
+ <section class="modal glass" role="dialog" aria-modal="true" aria-labelledby="mealTitle"><div class="sup" id="resultLabel">Bữa ăn tối nay</div><h2 id="mealTitle"></h2>
+ <div class="result-grid"><span class="result-food" id="foodEmoji"></span><span class="score" id="mealScore"></span></div>
+ <p id="review"></p><div class="receipt"><p id="receipt"></p><p id="reveal"></p></div>
+ <button class="quiet" id="watch">Xem lại quán bỏ lỡ</button><canvas class="result-map" id="resultMap" width="760" height="224" aria-label="Tuyến đường vừa chạy"></canvas>
+ <div class="result-buttons"><button class="primary" id="newNight">Đêm khác</button><button class="quiet" id="sameNight">Chạy lại tối nay</button><button class="quiet" id="edit">Đổi nhân vật</button></div></section>
+</div>
+<div id="memory" class="glass" hidden><div class="sup">Quán bạn đã lỡ</div><h2 id="memoryTitle"></h2><button class="quiet" id="endMemory">Về hóa đơn</button></div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const canvas = $("scene"), ctx = canvas.getContext("2d", {alpha:false});
+const clamp = (n,lo,hi) => Math.max(lo,Math.min(hi,n));
+const lerp = (a,b,t) => a+(b-a)*t;
+const tau = Math.PI*2;
+const rotation = (a,b) => Math.atan2(Math.sin(b-a),Math.cos(b-a));
+const nodes={
+ S:[0,0],A:[0,28],B:[1,61],C:[-2,99],D:[2,137],
+ L:[-29,26],M:[-27,61],N:[-34,95],O:[-30,132],
+ R:[30,29],T:[27,62],U:[34,100],V:[30,137],X:[2,163],Y:[31,163],
+ P:[-60,31],Q:[-64,64],J:[-57,97],K:[-62,137],
+ F:[-94,67],G:[-90,103],H:[-95,139],WE:[-118,145],
+ I:[61,25],AA:[66,58],BB:[59,101],CC:[67,136],DD:[65,164],
+ EE:[97,58],FF:[99,98],GG:[94,130],EA:[121,129],
+ XB:[2,205],YB:[31,205],QE:[-17,229],SE:[53,226]
+};
+const districts={
+ market:{name:"Xóm Chợ",color:"#644237",map:"#efaf87"},
+ old:{name:"Chung cư cũ",color:"#464762",map:"#c9adfb"},
+ alley:{name:"Hẻm nhà ống",color:"#32544b",map:"#a4e1b8"},
+ lantern:{name:"Phố lồng đèn",color:"#59434b",map:"#f6ab9c"},
+ canal:{name:"Bờ kè",color:"#31545a",map:"#9ee1eb"},
+ main:{name:"Phố chính",color:"#4c4d39",map:"#e4db9c"}
+};
+const exits=new Set(["WE","EA","QE","SE"]);
+const roads=[];
+function road(id,from,to,label,width,zone="main",terrain="street"){
+ const [x,z]=nodes[from], [endX,endZ]=nodes[to];
+ roads.push({id,from,to,label,width,zone,terrain,x,z,length:Math.hypot(endX-x,endZ-z),angle:Math.atan2(endX-x,endZ-z)});
+}
+road("SA","S","A","Đường Đói Bụng",8.9,"main");
+road("AB","A","B","Đường mặt phố",9.6,"main");
+road("BC","B","C","Đường Xì Xèo",8.8,"main");
+road("CD","C","D","Đường Chén Đũa",8.8,"main");
+road("DX","D","X","Dốc xuống bờ kè",7,"canal");
+road("AL","A","L","Hẻm chợ đầu xóm",5.4,"market");
+road("LM","L","M","Hẻm cơm tấm",4.7,"market");
+road("MN","M","N","Dãy bạt xanh",4.8,"market");
+road("NO","N","O","Hẻm phá lấu",4.5,"market");
+road("MB","M","B","Lối thông chợ",4.7,"market");
+road("CN","C","N","Hẻm mèo mun",4.2,"alley");
+road("OD","O","D","Hẻm bờ tường",4.4,"alley");
+road("AR","A","R","Hẻm tiệm sửa xe",4.9,"old");
+road("RT","R","T","Lối vào chung cư",5.7,"old");
+road("TU","T","U","Sân chung cư",9.2,"old","yard");
+road("UV","U","V","Hẻm lồng đèn",5.4,"lantern");
+road("BT","B","T","Hẻm chảo nóng",4.6,"old");
+road("UC","U","C","Lối thông chung cư",4.2,"old");
+road("DV","D","V","Đường hàng quán",6.8,"lantern");
+road("VY","V","Y","Dốc bờ kè phía Đông",6.7,"canal");
+road("LP","L","P","Dãy xe đẩy",4.4,"market");
+road("PQ","P","Q","Hẻm sạp trái cây",4.2,"market");
+road("QJ","Q","J","Hẻm chợ sau",4.3,"market");
+road("JN","J","N","Lối tắt chợ đêm",4.7,"market");
+road("JK","J","K","Hẻm nhà ống",5.1,"alley");
+road("KO","K","O","Hẻm có giàn bông giấy",4.5,"alley");
+road("QF","Q","F","Hẻm tiệm nước",4.6,"alley");
+road("FG","F","G","Hẻm xe dựng sát tường",5.2,"alley");
+road("GJ","G","J","Hẻm cổng xanh",4.4,"alley");
+road("GH","G","H","Hẻm đèn vàng",5.2,"alley");
+road("HK","H","K","Đường khu dân cư",6.0,"alley");
+road("HWE","H","WE","Lối ra chợ Tây",6.9,"market","exit");
+road("RI","R","I","Hẻm sau tiệm sửa xe",4.9,"old");
+road("IAA","I","AA","Dãy nhà trọ",4.3,"old");
+road("TAA","T","AA","Lối ngang sân chung cư",5.5,"old");
+road("AABB","AA","BB","Hẻm bàn ghế nhựa",5.1,"lantern");
+road("UBB","U","BB","Hẻm đèn giấy",4.5,"lantern");
+road("BBCC","BB","CC","Phố xe đẩy",6.8,"lantern");
+road("VCC","V","CC","Đường quán Hoa",7.1,"lantern");
+road("CCDD","CC","DD","Hẻm nhìn ra kênh",4.3,"canal");
+road("AAEE","AA","EE","Hẻm sủi cảo",5,"lantern");
+road("EEFF","EE","FF","Dãy biển chữ Hoa",6.5,"lantern");
+road("FFBB","FF","BB","Hẻm sát lò quay",4.5,"lantern");
+road("FFGG","FF","GG","Đường tiệm vịt quay",6.3,"lantern");
+road("CCGG","CC","GG","Ngã ngang khu quán Hoa",5.3,"lantern");
+road("GGEA","GG","EA","Lối ra phố Hoa",7.2,"lantern","exit");
+road("XY","X","Y","Bờ kè hàng me",7.5,"canal","bank");
+road("YDD","Y","DD","Bờ kè xe đẩy",7.4,"canal","bank");
+road("XXB","X","XB","Cầu Xóm Chợ",5.5,"canal","bridge");
+road("YYB","Y","YB","Cầu Chung Cư",7,"canal","bridge");
+road("XBYB","XB","YB","Đường dọc bờ Nam",7.2,"canal","bank");
+road("XBQE","XB","QE","Lối ra khu bờ Nam",7.0,"canal","exit");
+road("YBSE","YB","SE","Lối ra dưới chân cầu",7.1,"canal","exit");
+const menu = [
+ ["SA",.50,1,"Bún Bò Bẻ Lái","Bún bò giò heo","🍜",56,"#ff855e"],
+ ["AB",.49,1,"Bánh Mì Bất Ổn","Bánh mì thịt nướng","🥖",32,"#f5cb77"],
+ ["AL",.54,-1,"Cô Tư Tới Công Chuyện","Chè khúc bạch","🍨",34,"#97ddad"],
+ ["LM",.48,-1,"Cơm Tấm Cô Bảy","Cơm tấm sườn bì","🍛",55,"#ffc077"],
+ ["MB",.50,1,"Ốc Vui Vẻ","Ốc xào bơ tỏi","🐚",65,"#f4a9c7"],
+ ["MN",.49,-1,"Bánh Xèo Xèo Thiệt","Bánh xèo tôm thịt","🥞",48,"#ffcf82"],
+ ["NO",.53,-1,"Phá Lấu Không Phá Giá","Phá lấu bò","🥘",49,"#ff9164"],
+ ["OD",.5,1,"Cháo Khuya Chú Hai","Cháo gà xé","🍲",39,"#f6d785"],
+ ["AR",.53,1,"Tạp Hóa Có Bếp","Há cảo hấp","🥟",44,"#a8e9c2",true],
+ ["RT",.57,1,"Tiệm Rèm Xanh","Mì vịt tiềm","🍜",79,"#b4edb1",true],
+ ["BT",.49,-1,"Takoyaki Gác Xép","Takoyaki bạch tuộc","🐙",54,"#faa9b9"],
+ ["TU",.44,1,"Sân Cơm Nắm","Onigiri cá hồi","🍙",48,"#a1ddf7"],
+ ["TU",.72,-1,"Gà Cay Lạc Lối","Gà rán sốt Hàn","🍗",72,"#fd9e7b"],
+ ["UC",.54,-1,"Taco Tới Bến","Taco bò nướng","🌮",68,"#f8bb83"],
+ ["BC",.51,1,"Ramen Chờ Xíu","Ramen miso","🍜",89,"#ffc798"],
+ ["CN",.58,1,"Kem Hẻm Mèo","Kem dừa nướng","🍦",32,"#c9c7fa",true],
+ ["CD",.50,-1,"Pizza Ba Miếng","Pizza nấm phô mai","🍕",94,"#f9aa93"],
+ ["UV",.54,1,"Lồng Đèn Đỏ","Vịt quay Quảng Đông","🍚",86,"#ff865f"],
+ ["DV",.52,-1,"Burger Ga Cuối","Burger bò phô mai","🍔",81,"#ffdc8a"],
+ ["DX",.50,-1,"Bờ Kè Có Bánh","Bánh tráng nướng","🍳",29,"#ffc975"],
+ ["VY",.52,1,"Gác Ga BBQ","Xiên nướng ngũ vị","🍢",63,"#f7ae8f"],
+ ["LP",.53,1,"Bắp Xào Cô Năm","Bắp xào tép bơ","🌽",26,"#e7c763"],
+ ["PQ",.57,-1,"Xe Đẩy Nửa Đêm","Xôi mặn lạp xưởng","🍙",32,"#f2bd80"],
+ ["QJ",.47,1,"Dì Tám Chợ Sau","Cháo Tiều","🥣",52,"#ffb183",true],
+ ["JN",.58,-1,"Bột Chiên Sốt Sình Sịch","Bột chiên trứng","🍳",38,"#f1a661"],
+ ["JK",.49,1,"Bún Mắm Trong Hẻm","Bún mắm tôm mực","🍜",59,"#afd793"],
+ ["KO",.52,1,"Cà Phê Dưới Giàn Hoa","Cà phê sữa đá","☕",27,"#e9a2b9"],
+ ["QF",.55,-1,"Nước Mía Hai Ghế","Nước mía tắc","🥤",18,"#c0de8e"],
+ ["FG",.56,1,"Bánh Cuốn Sau Cổng","Bánh cuốn nóng, chả lụa","🥢",44,"#e4c6ab",true],
+ ["GH",.53,-1,"Hủ Tiếu Gõ Chú Lộc","Hủ tiếu xương","🍜",43,"#ec955e"],
+ ["RI",.55,1,"Sữa Đậu Xe Đẩy","Sữa đậu nành nóng","🥛",15,"#e6d695"],
+ ["IAA",.52,-1,"Bánh Tráng Chị Ba","Bánh tráng trộn","🌶️",31,"#f7a385"],
+ ["AABB",.61,-1,"Mì Trộn Chung Cư","Mì trộn tóp mỡ","🍜",48,"#a3dacc"],
+ ["UBB",.54,1,"Sủi Cảo Hẻm Đèn","Sủi cảo tôm thịt","🥟",68,"#ff9990"],
+ ["BBCC",.47,1,"Chè Đèn Đỏ","Chè mè đen","🥣",34,"#edafab"],
+ ["AAEE",.52,1,"Hủ Tiếu Sa Tế Bà Lý","Hủ tiếu sa tế bò","🍜",80,"#ef876f"],
+ ["EEFF",.54,-1,"Vịt Quay Chú Phúc","Cơm vịt quay","🍗",79,"#ffc67b"],
+ ["FFGG",.51,1,"Mì Kéo Bếp Sau","Mì hoành thánh","🍜",62,"#eeab91"],
+ ["XY",.57,-1,"Ốc Gió Bờ Kè","Ốc hương rang muối","🐚",92,"#a6dcdb"],
+ ["YDD",.52,-1,"Cá Viên Ven Kênh","Cá viên chiên","🍢",36,"#ffb688"],
+ ["XBYB",.52,1,"Bánh Canh Bờ Nam","Bánh canh cua","🦀",68,"#ef9c78"],
+ ["YBSE",.57,-1,"Chè Nóng Chân Cầu","Chè trôi nước","🥣",33,"#f2c39f"]
+].map(([roadId,position,side,name,dish,emoji,price,tint,secret=false])=>({road:roads.find(r=>r.id===roadId),position,side,name,dish,emoji,price,tint,secret}));
+const menuAt = new Map(roads.map(r=>[r.id,menu.filter(f=>f.road===r)]));
+function point(r,d,lateral=0,y=0){
+ return [r.x+Math.sin(r.angle)*d+Math.cos(r.angle)*lateral,y,r.z+Math.cos(r.angle)*d-Math.sin(r.angle)*lateral];
+}
+const freshSeed=()=> Math.floor(Math.random()*4294967296);
+function rng(seed){return ()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}
+const positive=["Nghe khách gọi thêm một phần.","Mùi đồ nướng thơm ra tới mép đường.","Khách lau sạch đĩa, rồi hỏi mua mang về.","Thấy chủ quán vừa bê mẻ mới ra."];
+const neutral=["Nghe tiếng chảo xèo sau quầy.","Có khách đứng đợi xem thực đơn.","Đèn bếp sáng, khách ra vào lai rai.","Quạt máy đang cố chiến đấu với hơi nóng."];
+const negative=["Một bàn còn nguyên nửa phần.","Nghe ai đó xin thêm chanh cho đỡ mặn.","Mùi khét thoáng qua khi chảo vừa lên lửa.","Có người hỏi bàn bên món này có cay không."];
+function makeNight(seed){
+ const pick=rng(seed), open=new Set();
+ const secretStalls=menu.filter(f=>f.secret);
+ secretStalls.forEach(f=>{if(pick()<.65)open.add(f);});
+ if(!open.size)open.add(secretStalls[Math.floor(pick()*secretStalls.length)]);
+ return new Map(menu.map((f,i)=>{
+  const score=Math.round((2.7+pick()*7.3)*10)/10, roll=pick();
+  const pool=roll<.3?neutral:roll<.88?(score>=7.3?positive:score<=5.4?negative:neutral):(score>=6?negative:positive);
+  return [f,{score,open:f.secret?open.has(f):(i===0||pick()>.15),clue:pool[Math.floor(pick()*pool.length)]}];
+ }));
+}
+let viewport={w:1,h:1,f:1,ratio:1}; 
+function resize(){
+ const ratio=Math.min(devicePixelRatio||1,1.7);
+ const w=innerWidth,h=innerHeight;
+ canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);
+ viewport={w,h,ratio,f:Math.max(w*.62,h*.86)};
+}
+addEventListener("resize",resize);resize();
+const town=[], rider=[], foodSigns=[];
+let drawTarget=town, vehicleOrigin=null, vehicleAngle=0;
+function translate(x,y,z){
+ if(!vehicleOrigin)return [x,y,z];
+ const s=Math.sin(vehicleAngle),c=Math.cos(vehicleAngle);
+ return [vehicleOrigin[0]+x*c+z*s,vehicleOrigin[1]+y,vehicleOrigin[2]-x*s+z*c];
+}
+function face(points,shade,layer=1){
+ const cx=points.reduce((sum,p)=>sum+p[0],0)/points.length;
+ const cz=points.reduce((sum,p)=>sum+p[2],0)/points.length;
+ const radius=Math.max(...points.map(p=>Math.hypot(p[0]-cx,p[2]-cz)));
+ drawTarget.push({points,shade,layer,cx,cz,radius});
+}
+function box(x,y,z,w,h,l,shades,a=0){
+ const s=Math.sin(a),c=Math.cos(a);
+ const p=(dx,dy,dz)=>translate(x+dx*c+dz*s,y+dy,z-dx*s+dz*c);
+ const v=[p(-w/2,0,-l/2),p(w/2,0,-l/2),p(w/2,0,l/2),p(-w/2,0,l/2),p(-w/2,h,-l/2),p(w/2,h,-l/2),p(w/2,h,l/2),p(-w/2,h,l/2)];
+ const sides=[[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7],[4,5,6,7]];
+ sides.forEach((indices,i)=>face(indices.map(j=>v[j]),shades[i%shades.length]));
+}
+function surface(r,d,l,w,len,y,color,layer=0){
+ face([point(r,d-len/2,l-w/2,y),point(r,d+len/2,l-w/2,y),point(r,d+len/2,l+w/2,y),point(r,d-len/2,l+w/2,y)],color,layer);
+}
+function roundPart(x,y,z,rx,ry,length,color,aroundX=false){
+ const vertices=Array.from({length:12},(_,i)=>{
+  const a=i*tau/12;
+  return [-1,1].map(side=>aroundX?translate(x+side*length/2,y+Math.cos(a)*ry,z+Math.sin(a)*rx):translate(x+Math.sin(a)*rx,y+Math.cos(a)*ry,z+side*length/2));
+ });
+ [0,1].forEach(side=>face(vertices.map(v=>v[side]),color[side%color.length]));
+ vertices.forEach((v,i)=>{const n=vertices[(i+1)%vertices.length];face([v[0],n[0],n[1],v[1]],color[i%color.length]);});
+}
+function roadside(r,d,l,y,w,h,len,colors){
+ const p=point(r,d,l,y);box(...p,w,h,len,colors,r.angle);
+}
+const buildingPalettes=[["#364b4a","#263f43","#253238","#455553","#536764"],["#5c4944","#3d3b3b","#332f36","#594742","#756051"],["#454b5c","#333b50","#313545","#354451","#565e69"],["#39574e","#2d453f","#2a4242","#365146","#5d6e53"]];
+const signs=new Map();
+function signTexture(title,subtitle,color,closed=false){
+ const key=[title,subtitle,color,closed].join("|");if(signs.has(key))return signs.get(key);
+ const el=document.createElement("canvas");el.width=460;el.height=118;
+ const p=el.getContext("2d");p.fillStyle=closed?"#18242a":"#122322";p.fillRect(0,0,460,118);
+ p.strokeStyle=closed?"#84918c":color;p.lineWidth=5;p.strokeRect(4,4,452,110);p.textAlign="center";
+ p.fillStyle=closed?"#a3aea4":color;p.font="900 36px system-ui";p.fillText(title,230,51,427);
+ p.fillStyle="#e7e8d4";p.font="650 22px system-ui";p.fillText(subtitle,230,87,425);
+ signs.set(key,el);return el;
+}
+function facade(r,d,side,food,height,depth,length,palette){
+ const lateral=side*(r.width/2+1.46),mag=sign=>lateral+side*sign;
+ roadside(r,d,mag(depth/2),.13,depth,height,length,palette);
+ const shopTint=food?.tint||"#d3a16e";
+ if(food){
+  roadside(r,d,mag(-.10),.16,.24,2.5,length*.77,["#3a3229","#282f2d","#2c3631","#252f29"]);
+  roadside(r,d,mag(-.25),.19,.23,2.06,length*.58,["#b77443","#755343","#a0764b","#815037"]);
+  roadside(r,d,mag(-.40),.20,.35,.86,length*.62,["#7e4e39","#996245","#8c6644"]);
+  roadside(r,d,mag(-.60),.97,1.44,.17,length*.96,[shopTint,"#924b40",shopTint,"#9c5141"]);
+  for(let i=-2;i<=2;i++)roadside(r,d+i*length*.19,mag(-1.00),2.46,2.0,.12,length*.19,i%2?["#405550","#3b4c48","#526862"]:[shopTint,"#9e6750",shopTint]);
+  roadside(r,d,mag(-.87),.05,1.49,.065,length*.94,["#84705a"]);
+  foodSigns.push({food,pos:point(r,d,mag(-.5),3.06),width:length*.98});
+ }else{
+  roadside(r,d,mag(-.08),.15,.19,2.05,length*.64,["#2c383b","#2a3537","#354648"]);
+  roadside(r,d,mag(-.21),2.15,.47,.12,length*.76,["#637267"]);
+ }
+ for(let floor=3.85;floor<height-.7;floor+=2.25){
+  for(let i=-1;i<=1;i++){
+   const light=Math.sin(d+floor+i*33)>.1;
+   roadside(r,d+i*length*.27,mag(-.052),floor,.15,.89,length*.15,light?["#946e4f","#dbc485","#c3a169","#ddb57e"]:["#303a42","#28333a","#27383f"]);
+  }
+ }
+ roadside(r,d,mag(depth/2),height+.08,depth+.37,.15,length+.36,[palette[4],"#46575c"]);
+}
+function segment(a,b,thickness,shade){
+ const angle=Math.atan2(b[0]-a[0],b[2]-a[2]);
+ box((a[0]+b[0])/2,Math.min(a[1],b[1]),(a[2]+b[2])/2,thickness,thickness,Math.hypot(b[0]-a[0],b[2]-a[2]),[shade],angle);
+}
+function cables(r,d,random){
+ const half=r.width/2+.73;
+ for(const side of [-1,1]){
+  roadside(r,d,side*half,0,.13,5.2,.14,["#596461","#4c5c58"]);
+  roadside(r,d,side*half,3.81,.27,.4,.23,["#405554"]);
+ }
+ for(let i=0;i<3;i++){
+  const y=4.55+i*.23;
+  segment(point(r,d,-half,y),point(r,d,0,y),.035,"#262727");
+  segment(point(r,d,0,y),point(r,d+random()*.25,half,y),.035,"#262727");
+ }
+}
+function planter(r,d,l,tree=false,pink=false){
+ roadside(r,d,l,.05,.6,.34,.6,["#724f43","#654c42","#9f684d"]);
+ roadside(r,d,l,.28,.1,tree?2.7:1.04,.12,["#605247","#81634b"]);
+ const top=tree?2.45:1.1;
+ for(let i=-1;i<=1;i++)roadside(r,d+i*.28,l+i*.13,top+(1-Math.abs(i))*.27,tree?1.28:.61,tree?1.18:.58,tree?1.48:.73,
+  pink?["#a6577f","#c77b9c","#8b496d","#9e5476","#e08db0"]:["#486644","#355741","#29473d","#42634c","#617950"]);
+}
+function cart(r,d,side,tint){
+ const l=side*(r.width/2+.66);
+ roadside(r,d,l,.28,.62,.64,1.34,["#80a29c","#698481","#5c7272","#789997"]);
+ roadside(r,d,l,.96,.75,.06,1.44,["#9ab2a4","#d3c8a0"]);
+ roadside(r,d-.37,l,.95,.47,.25,.46,["#7e968f","#a5aaa0"]);
+ roadside(r,d+.32,l,.95,.55,.17,.60,[tint]);
+ for(const offset of [-.50,.50]){
+  roadside(r,d+offset,l+side*.27,.09,.10,.35,.32,["#222f31","#48545b"]);
+  roadside(r,d+offset,l-side*.27,.94,.029,.69,.033,["#76786c"]);
+ }
+ roadside(r,d,l,1.60,.66,.11,1.48,[tint,"#855c4e"]);
+}
+function parkedScooter(r,d,l,tint){
+ for(const offset of [-.61,.64]){
+  roadside(r,d+offset,l,.07,.16,.38,.39,["#222a2b","#171f23","#475052"]);
+ }
+ roadside(r,d,l,.32,.34,.26,1.56,[tint,"#383e42"]);
+ roadside(r,d-.35,l,.56,.39,.17,.82,[tint,"#75485a"]);
+ roadside(r,d-.31,l,.73,.32,.075,.69,["#283033"]);
+ roadside(r,d+.55,l,.53,.31,.47,.2,[tint]);
+ roadside(r,d+.53,l,.98,.5,.078,.15,["#393e42","#6f7774"]);
+}
+function lanterns(r,d){
+ const width=r.width;
+ roadside(r,d,0,3.86,width+1.8,.025,.022,["#43474c"]);
+ for(let i=-2;i<=2;i++){
+  const l=i*width/5.8;
+  const h=3.43+(i*i)*.042;
+  roadside(r,d,l,h,.027,.4,.025,["#65605a"]);
+  roadside(r,d,l,h,.28,.28,.23,[i%2?"#eb835e":"#f9cb83","#d77b4f","#fdbe77"]);
+ }
+}
+function makeCanal(random){
+ const water={x:-147,z:184,width:18,length:294,angle:Math.PI/2};
+ surface(water,147,0,19,294,-.10,"#234349",0);
+ for(let i=0;i<95;i++){
+  surface(water,random()*294,(random()-.5)*18.3,.037+random()*.083,.8+random()*4,-.081,
+   ["#345359","#3a6164","#547470","#284b56"][i%4],0);
+ }
+ for(const z of [174.2,193.8]){
+  for(let x=-125;x<=125;x+=7){
+   if(Math.abs(x-2)<6||Math.abs(x-31)<6)continue;
+   box(x,.03,z,6.1,.28,.65,["#5d6862","#53625d","#778275"]);
+  }
+ }
+}
+function makeTown(){
+ const random=rng(708338);
+ makeCanal(random);
+ for(const r of roads){
+  const [x,z]=nodes[r.to], {terrain,zone,width,length}=r;
+  const palette=districts[zone];
+  const bridge=terrain==="bridge",bank=terrain==="bank";
+  const color=bridge?"#414b4c":bank?"#354849":zone==="market"?"#393936":zone==="old"?"#353941":"#303839";
+  surface(r,length/2,0,width,length,.019,color,0);
+  for(const side of [-1,1]){
+   const curb=width>7?1.29:.88;
+   surface(r,length/2,side*(width/2+curb/2),curb,length-8,.046,"#59605b",0);
+   surface(r,length/2,side*(width/2+.03),.10,length-8,.048,"#85887a",0);
+   for(let d=8;d<length-6;d+=2.1)surface(r,d,side*(width/2+curb/2),curb*.91,.045,.05,"#77796c",0);
+   if(bridge||bank){
+    const rail=side*(width/2+.40);
+    roadside(r,length/2,rail,.81,.084,.083,length-9,["#9caaa0","#627c75"]);
+    roadside(r,length/2,rail,.33,.055,.055,length-9,["#647a73"]);
+    for(let d=5;d<length-4;d+=3.7)roadside(r,d,rail,.06,.093,.79,.092,["#748780","#a0aaa0"]);
+   }
+  }
+  if(width>7&&!bank){
+   for(let d=6;d<length-4;d+=4.4)surface(r,d,0,.09,1.8,.051,"#9e916c",0);
+   for(let i=-3;i<=3;i++){
+    surface(r,length-5.4,i*width*.109,.28,1.75,.051,"#797c72",0);
+   }
+  }
+  const foods=menuAt.get(r.id);
+  for(const f of foods){
+   const d=length*f.position;
+   if(bank||zone==="market"){
+    cart(r,d,f.side,f.tint);
+    const pos=point(r,d,f.side*(width/2+.91),2.22);
+    foodSigns.push({food:f,pos,width:3.7});
+    for(let i of [-1,1])roadside(r,d+i*1.3,f.side*(width/2+.85),.07,.32,.34,.34,
+      [i<0?"#bc4341":"#526caa","#793d42"]);
+    if(bank)continue;
+   }
+   facade(r,d,f.side,zone==="market"?null:f,zone==="old"?8+random()*4:5+random()*4,3.0,5.7,
+    [palette.color,...buildingPalettes[Math.floor(random()*4)].slice(1)]);
+  }
+  if(!bridge&&!bank){
+   const slots=length>=34?[8,length*.34,length*.65,length-7.7]:[7.7,length-7.7];
+   for(const side of [-1,1])for(const d of slots){
+    if(foods.some(f=>f.side===side&&Math.abs(f.position*length-d)<6))continue;
+    const h=(zone==="old"?7:4)+random()*4;
+    const colors=[palette.color,...buildingPalettes[Math.floor(random()*4)].slice(1)];
+    facade(r,d,side,null,h,zone==="old"?4.8:3.8,zone==="old"?5.5:4.3,colors);
+    if(zone==="old"){
+     for(let y=3.8;y<h-.5;y+=2.2){
+      roadside(r,d,side*(width/2+1.15),y-.16,.78,.15,4.4,["#84847c","#626d70"]);
+      roadside(r,d,side*(width/2+.77),y+.42,.065,.08,4.4,["#a4a296"]);
+      roadside(r,d+.73,side*(width/2+.76),y+.13,.09,.36,.52,["#b6a28c","#806667"]);
+     }
+    }
+    if(random()>.49)planter(r,d,side*(width/2+.71),false,zone==="alley"&&random()>.5);
+    if((zone==="alley"||zone==="old")&&random()>.64){
+     parkedScooter(r,d+1.2,side*(width/2+.52),zone==="old"?"#76536b":"#486b6e");
+    }
+   }
+  }
+  const lamps=length>35?[7,length*.52,length-6.5]:[6.7,length-6.4];
+  for(const d of lamps){
+   const side=d<10?1:-1;
+   roadside(r,d,side*(width/2+.59),.05,.09,4.13,.09,["#6b7973","#50665d"]);
+   roadside(r,d,side*(width/2+.20),4.13,.87,.085,.12,["#64776d"]);
+   roadside(r,d,side*(width/2-.09),4.0,.47,.12,.24,[zone==="old"?"#e5ebd4":"#fff2bd","#f2c576"]);
+   for(let i=0;i<4;i++)surface(r,d,side*(width/2-.86),2.0-i*.33,4.7-i*.73,.052+i*.001,["#534939","#625443","#6f6149","#7c6b50"][i],0);
+   if(bank)planter(r,d,side*(width/2+.63),true);
+  }
+  if(zone==="market"||zone==="alley"||zone==="old"){
+   cables(r,length*.31,random);
+   const number=5+(r.id.charCodeAt(0)+r.id.charCodeAt(r.id.length-1))%137;
+   const signPos=point(r,6.25,-(width/2+.85),2.94);
+   foodSigns.push({pos:signPos,width:1.90,title:"HẺM "+number,subtitle:"KHU DÂN CƯ",tint:"#9bdcd9"});
+  }
+  if(zone==="lantern"||terrain==="yard")for(let d=9;d<length-6;d+=6.2)lanterns(r,d);
+  if(terrain==="yard"){
+   for(const side of [-1,1]){
+    planter(r,length*.32,side*(width/2+.55),true);
+    roadside(r,length*.31+2.0,side*(width/2+.75),.12,.38,.25,1.45,["#78856d"]);
+   }
+  }
+  if(exits.has(r.to)){
+   roadside(r,length-2.2,-width*.44,0,.19,4,.21,["#9a785c"]);
+   roadside(r,length-2.2,width*.44,0,.19,4,.21,["#9a785c"]);
+   roadside(r,length-2.2,0,3.56,width*.99,.46,.33,["#a57a55","#ae8b62"]);
+   foodSigns.push({pos:[x,3.9,z-2.65],width:4.2,title:r.label});
+  }
+ }
+ Object.values(nodes).forEach(([x,z])=>{
+  const p=(dx,dz)=>[x+dx,.033,z+dz];
+  face([p(-4.8,-4.8),p(-4.8,4.8),p(4.8,4.8),p(4.8,-4.8)],"#353b3a",0);
+ });
+ for(let i=0;i<52;i++){
+  const side=i%2?1:-1,height=8+random()*21;
+  const z=-17+i*4.8;
+  box(side*(125+random()*21),-.04,z,5+random()*9,height,6+random()*5,["#22333e","#2a3e49","#263844","#30424c","#46545a"]);
+ }
+}
+makeTown();
+const companions={
+ none:{label:"Đi một mình",name:""},
+ nam:{label:"Nam",name:"Bạn đồng hành",color:["#3b6874","#4e8991","#639fa4"]},
+ nu:{label:"Nữ",name:"Bạn đồng hành",color:["#a16a56","#c8896b","#da9d83"]},
+ dog:{label:"Chó",name:"Mực",color:["#a76c45","#c98d5d","#ebbd89"]},
+ cat:{label:"Mèo",name:"Mun",color:["#595763","#797583","#aaa4a5"]},
+ cow:{label:"Bò",name:"Bò Sữa",color:["#b8b3a6","#d9d5c4","#efe8d8"]},
+ pig:{label:"Heo",name:"Ủn",color:["#b96977","#dc8e9a","#f0b4b0"]}
+};
+const labels3d=[];
+const characterSkin=["#ae7053","#cc8c64","#e5ad7e"];
+function oval(x,y,z,rx,ry,rz,colors){
+ const rings=[-Math.PI/2,-Math.PI/4,0,Math.PI/4,Math.PI/2].map(a=>
+  Array.from({length:10},(_,i)=>{
+   const b=i*tau/10;
+   return translate(x+rx*Math.cos(a)*Math.sin(b),y+ry*Math.sin(a),z+rz*Math.cos(a)*Math.cos(b));
+  }));
+ for(let j=0;j<rings.length-1;j++)for(let i=0;i<10;i++){
+  const k=(i+1)%10,t=j===0?0:j===3?2:(i<3||i>7)?2:1;
+  face([rings[j][i],rings[j][k],rings[j+1][k],rings[j+1][i]],colors[t]||colors[0]);
+ }
+}
+function modelPassenger(type,bob,tilt){
+ if(type==="none")return;
+ const style=companions[type], c=style.color;
+ const human=type==="nam"||type==="nu";
+ const dark=["#272d32","#3e4347","#515157"];
+ const x=tilt*.60,z=-.80;
+ if(human){
+  const w=type==="nu"?.36:.43;
+  const base=.91+bob;
+  oval(x,base+.22,z,w*.55,.32,.158,c);
+  oval(x,base+.56,z+.035,.13,.15,.125,characterSkin);
+  oval(x,base+.65,z+.011,.153,.126,.147,["#333c42","#53646a","#748488"]);
+  if(type==="nu")oval(x,base+.52,z-.128,.071,.116,.067,dark);
+  for(const side of [-1,1]){
+   oval(side*.207,.88,z+.10,.092,.092,.23,dark);
+   oval(side*.23,.69,z+.27,.083,.19,.09,dark);
+   oval(side*.24,.53,z+.33,.08,.069,.13,dark);
+   oval(side*w*.56+x,base+.21,z+.13,.063,.09,.25,c);
+   oval(side*w*.56+x,base+.16,z+.33,.06,.06,.07,characterSkin);
+  }
+  labels3d.push({id:"rearTag",position:translate(x,base+.84,z),shift:1,text:state.rearName||style.name});
+ }else{
+  const cat=type==="cat",cow=type==="cow",pig=type==="pig";
+  const size=cow?1.31:cat?.76:pig?.96:1;
+  const y=.925+bob;
+  const tone=cow?["#353433","#454447","#59595d"]:c;
+  oval(x,y+.16*size,z,.21*size,.20*size,.255*size,c);
+  if(cow)oval(x-.12,y+.23,z-.14,.132,.144,.13,tone);
+  for(const side of [-1,1]){
+   oval(x+side*.137*size,y+.045,z+.065,.075*size,.07*size,.19*size,tone);
+   oval(x+side*.087*size,y+.406*size,z+.093,.092*size,.13*size,.086*size,c);
+  }
+  const head=y+.425*size;
+  oval(x,head,z+.068,.164*size,.158*size,.144*size,c);
+  const muzzle=pig?["#b76375","#e594a5","#f6bbc4"]:cow?["#937477","#c19b9a","#e0b7ac"]:["#987863","#c2a28a","#e5c2a7"];
+  oval(x,head-.047*size,z+.175,.107*size,.069*size,.087*size,muzzle);
+  for(const side of [-1,1]){
+   const earHeight=cat||pig?.112:cow?.072:.13;
+   const earY=head+(cat||pig?.138:cow?.064:.014)*size;
+   oval(x+side*(cow?.184:.129)*size,earY,z+.026,.054*size,earHeight*size,.058*size,pig?muzzle:tone);
+   if(cow)oval(x+side*.118*size,head+.155,z+.055,.037,.112,.036,["#9b886b","#cabc9b","#e2dac2"]);
+   oval(x+side*.078*size,head+.034,z+.17,.026*size,.030*size,.022*size,dark);
+   if(pig)oval(x+side*.036,head-.041,z+.25,.019,.022,.012,["#a15462","#a15462","#b06774"]);
+  }
+  if(cat||type==="dog"){
+   const wag=Math.sin(performance.now()*.012)*.09;
+   oval(x+wag,y+.18,z-.259,.059,.13,.076,tone);
+   oval(x+wag*1.8,y+.27,z-.294,.050,.09,.058,tone);
+  }
+  labels3d.push({id:"rearTag",position:translate(x,head+(cow?.30:.29),z),shift:1,text:state.rearName||style.name});
+ }
+}
+function bikeLighting(){
+ const shadow=Array.from({length:18},(_,i)=>{
+  const a=i*tau/18;
+  return translate(Math.cos(a)*.57,.062,-.1+Math.sin(a)*1.27);
+ });
+ face(shadow,"#0c171b75",0);
+ for(let i=0;i<3;i++){
+  const width=1.20-i*.28,far=10-i*1.4;
+  face([translate(-.22,.066,.9),translate(.22,.066,.9),translate(width,.066,far),
+   translate(.33,.066,far+1),translate(-.33,.066,far+1),translate(-width,.066,far)],"#ffe0a217",0);
+ }
+}
+function makeRider(pos,angle,gender,ms=0,tilt=0){
+ rider.length=0;labels3d.length=0;drawTarget=rider;vehicleOrigin=pos;vehicleAngle=angle;
+ bikeLighting();
+ const red=["#9a292e","#cc3840","#951d2b","#d34b48","#de5a55"], black=["#242a30","#171c23","#343841"], silver=["#7d8e92","#4e6268","#a0abad"];
+ const white=["#ececdd","#c5d4d2","#f0f4e8","#d9e4db","#ffffee"], pants=["#222f42","#2b3c50","#35475c"],skin=["#b57655","#db9b6b","#f4b792"];
+ for(const z of [-.79,.81]){
+  roundPart(0,.31,z,.30,.30,.20,black,true);
+  roundPart(0,.31,z,.18,.18,.221,silver,true);
+ }
+ box(0,.31,-.21,.45,.30,1.24,red);
+ box(0,.55,-.49,.55,.28,.94,red);
+ box(0,.80,-.31,.51,.09,.91,black);
+ box(0,.44,.49,.34,.26,.47,black);
+ box(0,.53,.74,.43,.66,.28,red);
+ box(0,1.05,.71,.59,.19,.25,red);
+ box(0,1.02,.88,.39,.102,.048,["#ffefb0","#fbe59f"]);
+ box(0,.66,-.973,.42,.077,.058,["#ff6259","#ff9180"]);
+ box(0,.63,-.974,.30,.022,.06,["#fa695e"]);
+ box(0,.78,-.901,.39,.038,.4,["#797e80","#555c60","#a7afb1"]);
+ box(0,.46,-.989,.23,.13,.043,["#d9dfd5"]);
+ box(.30,.35,-.40,.13,.13,.67,silver);
+ box(0,1.14,.55,.89,.052,.075,black);
+ for(const side of [-1,1]){
+  box(.38*side,1.13,.54,.16,.06,.11,black);
+  box(.43*side,1.17,.66,.035,.25,.035,silver);
+  box(.45*side,1.41,.675,.16,.07,.08,black);
+  box(.21*side,.57,.21,.15,.11,.27,black);
+  box(.21*side,.65,.12,.16,.30,.22,pants);
+  box(.22*side,.85,-.11,.18,.14,.47,pants);
+  box(.25*side,.90,-.38,.16,.33,.27,white);
+  box(.26*side,1.19,-.08,.134,.29,.21,white);
+  box(.34*side,1.176,.17,.14,.125,.39,white);
+  box(.38*side,1.175,.41,.13,.10,.12,skin);
+ }
+ const female=gender==="nu";
+ const bob=Math.sin(ms*.016)*Math.min(.024,state.speed*.003);
+ const lean=clamp(tilt,-.16,.16);
+ oval(lean,.93+.27+bob,-.30,female?.244:.285,.35,.209,white);
+ box(lean,.935,-.445,female?.387:.448,.18,.16,white);
+ oval(lean,1.51+bob,-.26,.075,.137,.081,skin);
+ oval(lean,1.64+bob,-.25,.157,.166,.152,skin);
+ oval(lean,1.708+bob,-.261,.179,.14,.168,["#322f36","#53545b","#73747e"]);
+ if(female)oval(lean,1.51+bob,-.437,.068,.14,.06,["#312c2d","#54403c","#6c5041"]);
+ if(state.rear!=="none"){
+  box(0,.78,-.80,.48,.13,.53,black);
+  modelPassenger(state.rear,bob*.7,lean);
+ }
+ labels3d.push({id:"driverTag",position:translate(lean,1.94+bob,-.25),shift:-1,text:state.name||"Người lái"});
+ drawTarget=town;vehicleOrigin=null;
+}
+let cam={x:0,z:-5,y:2.8,angle:0};let yaw=0;
+function cameraSpace(p){
+ const dx=p[0]-cam.x,dz=p[2]-cam.z;
+ const x=dx*cam.cos-dz*cam.sin, depth=dx*cam.sin+dz*cam.cos,dy=p[1]-cam.y;
+ return [x,dy*.988+depth*.154,depth*.988-dy*.154];
+}
+function screen(p){return [viewport.w*.5+p[0]*viewport.f/p[2],viewport.h*.46-p[1]*viewport.f/p[2]];}
+function clipNear(points){
+ const out=[];const near=.28;
+ for(let i=0;i<points.length;i++){
+  const a=points[i],b=points[(i+1)%points.length];
+  if(a[2]>=near)out.push(a);
+  if((a[2]>=near)!==(b[2]>=near)){
+   const t=(near-a[2])/(b[2]-a[2]);
+   out.push([lerp(a[0],b[0],t),lerp(a[1],b[1],t),near]);
+  }
+ }
+ return out;
+}
+function vendorPoint(food,index,height=0){
+ const offset=index===0?1.34:index===1?-.88:-1.71;
+ const lateral=food.side*(food.road.width*.5+(index===0?.92:.50));
+ return point(food.road,food.road.length*food.position+offset,lateral,height+.12);
+}
+const hostLines=[
+ "Mới lên bếp đó, ghé ăn một phần nghen.",
+ "Còn nóng nè. Ngồi ghế này cho mát!",
+ "Cứ tấp vô từ từ, có chỗ dựng xe bên này."
+];
+const clueLines=new Map([
+ ["Nghe khách gọi thêm một phần.","Cô ơi, cho con thêm một phần đem về!"],
+ ["Mùi đồ nướng thơm ra tới mép đường.","Chạy ngang nghe mùi thơm là tui quay qua ngó liền."],
+ ["Khách lau sạch đĩa, rồi hỏi mua mang về.","Dĩa này hết sạch rồi. Gói thêm giúp con một phần nha."],
+ ["Thấy chủ quán vừa bê mẻ mới ra.","Mẻ mới lên rồi đó. Để con lấy thêm đôi đũa."],
+ ["Một bàn còn nguyên nửa phần.","Nãy giờ tui mới ăn được phân nửa à."],
+ ["Nghe ai đó xin thêm chanh cho đỡ mặn.","Cô ơi, cho con thêm miếng chanh. Hơi mặn với con."],
+ ["Mùi khét thoáng qua khi chảo vừa lên lửa.","Ủa, bếp bên trong có khét nhẹ không ta?"],
+ ["Có người hỏi bàn bên món này có cay không.","Bạn ơi, món đó cay dữ không vậy?"],
+ ["Nghe tiếng chảo xèo sau quầy.","Nghe cái chảo xèo là biết sắp có đồ ăn rồi."],
+ ["Có khách đứng đợi xem thực đơn.","Tui đang phân vân chưa biết gọi gì."],
+ ["Đèn bếp sáng, khách ra vào lai rai.","Tầm này ghé là còn ghế trống nè."],
+ ["Quạt máy đang cố chiến đấu với hơi nóng.","Qua bên này ngồi, có quạt mát hơn nè."]
+]);
+function byShop(food,data,items,now){
+ if(!data.open)return;
+ const count=data.score>7.1?3:2;
+ for(let i=0;i<count;i++){
+  const pos=vendorPoint(food,i),p=cameraSpace(pos);
+  if(p[2]<1.1||p[2]>52||Math.abs(p[0])>p[2]*1.2)continue;
+  if(p[2]<19){
+   renderVendor(food,i,pos,items,now);
+  }else{
+   items.push({patron:true,p:screen(p),img:patronSprite(i),w:viewport.f/p[2]*.69,depth:p[2],layer:1});
+  }
+ }
+}
+const npcMesh=[];
+function renderVendor(food,index,pos,items,now){
+ const facing=food.road.angle-food.side*Math.PI*.5;
+ npcMesh.length=0;drawTarget=npcMesh;vehicleOrigin=pos;vehicleAngle=facing;
+ const isHost=index===0, moving=isHost&&state.finished===food&&state.mode==="stop";
+ const shirt=index===0?["#885c4c","#bc8263","#dba47e"]:index===1?["#37545b","#587e83","#78a1a1"]:["#694960","#8a667b","#a58492"];
+ const dark=["#2a3434","#3b4649","#4b5655"];
+ const idle=Math.sin(now*2.6+index)*.014,gesture=moving?(Math.sin(now*6)+1)*.065:.02;
+ oval(0,1.03+idle,0,.214,.33,.127,shirt);
+ oval(0,1.465+idle,.008,.114,.151,.114,characterSkin);
+ oval(0,1.545+idle,-.019,.122,.103,.113,dark);
+ if(isHost){
+  oval(0,1.56+idle,.023,.146,.05,.15,["#785140","#ad7751","#c69b75"]);
+  box(0,.78,.118,.279,.45,.04,["#426151","#4b7564","#6c9072"]);
+ }
+ for(const side of [-1,1]){
+  oval(side*.091,.43,0,.077,.35,.088,dark);
+  oval(side*.089,.08,.051,.083,.077,.14,dark);
+  oval(side*.218,1.01+idle-.08*side,.038,.065,.205,.073,shirt);
+  oval(side*.229,.855+gesture*(side===1?2:0),.103+gesture,.054,.11,.076,characterSkin);
+  oval(side*.045,1.477+idle,.115,.018,.019,.013,dark);
+ }
+ drawTarget=town;vehicleOrigin=null;
+ for(const m of npcMesh){
+  const points=clipNear(m.points.map(cameraSpace));
+  if(points.length<3)continue;
+  const depth=points.reduce((sum,q)=>sum+q[2],0)/points.length;
+  items.push({points:points.map(screen),shade:m.shade,depth,layer:1});
+ }
+}
+function pickSpeech(now){
+ if(!$("instructions").hidden)return null;
+ if(state.mode==="stop"){
+  const food=state.finished,n=state.night.get(food),id=state.mealStep;
+  const meals=[
+   {index:0,speaker:"Chủ quán",line:"Vô ngồi nè! Để tui dọn "+food.dish.toLocaleLowerCase("vi-VN")+" ra liền."},
+   {index:1,speaker:"Khách trong quán",line:clueLines.get(n.clue)||"Tui cũng mới gọi món đó nè."},
+   {index:0,speaker:"Chủ quán",line:"Món lên rồi nghen. Ăn thử lúc còn nóng đi!"}
+  ];
+  return {food,...meals[id]};
+ }
+ if(state.mode!=="ride")return null;
+ const food=nearFood(),n=food&&state.night.get(food);
+ if(!n?.open)return null;
+ if(state.greetingFood!==food){state.greetingFood=food;state.greetingAt=now;}
+ const greeting=Math.floor((now-state.greetingAt)/3.6)%2===0;
+ return {food,index:greeting?0:1,speaker:greeting?"Chủ quán":"Khách trong quán",
+  line:greeting?hostLines[food.price%hostLines.length]:clueLines.get(n.clue)||"Bữa nay ghé ăn khuya hả?"};
+}
+function updateWorldLabels(now){
+ const menuMode=state.mode==="menu", hasRear=state.rear!=="none";
+ const visibleTags=new Set();
+ if(state.mode==="ride"||menuMode&&viewport.w>=650){
+  const projected=labels3d.map(o=>({...o,q:cameraSpace(o.position)}));
+  for(const o of projected){
+   if(o.q[2]<.7)continue;
+   const [anchorX,y]=screen(o.q);
+   if(anchorX<18||anchorX>viewport.w-18||y<72||y>viewport.h-55)continue;
+   const tag=$(o.id),offset=hasRear?o.shift*Math.min(63,viewport.w*.127):0;
+   if(tag.textContent!==o.text)tag.textContent=o.text;
+   tag.hidden=false;visibleTags.add(o.id);
+   tag.style.left=clamp(anchorX+offset,tag.offsetWidth/2+5,viewport.w-tag.offsetWidth/2-5)+"px";
+   tag.style.top=y+"px";
+  }
+ }
+ for(const id of ["driverTag","rearTag"])if(!visibleTags.has(id))$(id).hidden=true;
+ const speech=pickSpeech(now),tag=$("speechTag");
+ if(!speech){tag.hidden=true;return;}
+ const p=cameraSpace(vendorPoint(speech.food,speech.index,1.78));
+ if(p[2]<.65){tag.hidden=true;return;}
+ const [x,y]=screen(p),w=viewport.w,h=viewport.h;
+ if(x<-65||x>w+65||y<40||y>h-72){tag.hidden=true;return;}
+ if($("speaker").textContent!==speech.speaker)$("speaker").textContent=speech.speaker;
+ if($("speechLine").textContent!==speech.line)$("speechLine").textContent=speech.line;
+ tag.hidden=false;
+ const half=tag.offsetWidth/2;
+ const center=clamp(x,half+8,w-half-8);
+ tag.style.left=center+"px";tag.style.top=Math.max(112,y-7)+"px";
+ tag.style.setProperty("--tail",clamp(x-center+half,12,half*2-12)+"px");
+}
+const patrons=[];
+function patronSprite(i){
+ if(patrons[i])return patrons[i];
+ const p=document.createElement("canvas");p.width=60;p.height=148;
+ const c=p.getContext("2d");
+ c.fillStyle="#1b252b";c.fillRect(17,92,11,53);c.fillRect(33,92,11,53);
+ c.fillStyle=["#a15753","#e1aa6b","#647b95"][i];
+ c.beginPath();c.roundRect(10,39,41,61,12);c.fill();
+ c.fillStyle="#cb976a";c.beginPath();c.ellipse(30,23,13,18,0,0,tau);c.fill();
+ c.fillStyle="#292a2a";c.beginPath();c.ellipse(30,15,14,13,0,Math.PI,tau);c.fill();
+ c.fillStyle="#2d3334";c.fillRect(13,141,16,6);c.fillRect(33,141,16,6);
+ return patrons[i]=p;
+}
+function signItem(items,pos,width,img,glow=false){
+ const p=cameraSpace(pos);if(p[2]<1.15||p[2]>90||Math.abs(p[0])>p[2]*1.3)return;
+ items.push({depth:p[2]-.4,layer:1,sign:true,p:screen(p),w:width*viewport.f/p[2],img,glow});
+}
+function drawScene(){
+ const {w,h,f,ratio}=viewport;
+ ctx.setTransform(ratio,0,0,ratio,0,0);
+ const sky=ctx.createLinearGradient(0,0,0,h*.62);
+ sky.addColorStop(0,"#101a35");sky.addColorStop(.46,"#2b4356");sky.addColorStop(.82,"#8c655d");sky.addColorStop(1,"#434940");
+ ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+ const moonX=((w*.69-cam.angle*w*.33)%w+w)%w,moonY=h*.15;
+ const glow=ctx.createRadialGradient(moonX,moonY,9,moonX,moonY,73);
+ glow.addColorStop(0,"#fff2b0aa");glow.addColorStop(1,"#ffe19700");
+ ctx.fillStyle=glow;ctx.fillRect(moonX-76,moonY-76,152,152);
+ ctx.fillStyle="#fff1bc";ctx.beginPath();ctx.arc(moonX,moonY,13,0,tau);ctx.fill();
+ for(let i=0;i<38;i++){ctx.fillStyle=i%4?"#f7ddab65":"#ffebcaba";ctx.fillRect(((i*137.5-cam.angle*108)%w+w)%w,(i*47.9)%(h*.29),i%4?1:2,1);}
+ const horizon=h*.46-f*.154/.988;
+ ctx.fillStyle="#192726";ctx.fillRect(0,horizon+1,w,h-horizon);
+ cam.cos=Math.cos(cam.angle);cam.sin=Math.sin(cam.angle);
+ const items=[];
+ const count=town.length+rider.length,horizontal=w/(2*f)+.19,cos=cam.cos,sin=cam.sin;
+ for(let i=0;i<count;i++){
+  const mesh=i<town.length?town[i]:rider[i-town.length];
+  const dx=mesh.cx-cam.x,dz=mesh.cz-cam.z,r=mesh.radius;
+  const centerDepth=dx*sin+dz*cos;
+  if(centerDepth+r<-.6||centerDepth-r>116||Math.abs(dx*cos-dz*sin)>Math.max(0,centerDepth+r)*horizontal+r+1.1)continue;
+  const transformed=mesh.points.map(cameraSpace);
+  if(transformed.every(p=>p[2]>.28&&(p[0]>p[2]*1.22||p[0]<-p[2]*1.22)&&Math.sign(p[0])===Math.sign(transformed[0][0])))continue;
+  if(transformed.every(p=>p[2]<.28||p[2]>124))continue;
+  const depth=transformed.reduce((sum,p)=>sum+Math.max(.1,p[2]),0)/transformed.length;
+  const points=clipNear(transformed).map(screen);
+  if(points.length<3||points.every(p=>p[0]<0)||points.every(p=>p[0]>w)||points.every(p=>p[1]<0)||points.every(p=>p[1]>h))continue;
+  // For coplanar asphalt, paint its intersections and markings above the base.
+  items.push({points,depth,layer:mesh.layer,shade:mesh.shade,y:mesh.points[0][1]});
+ }
+ const now=performance.now()/1000;
+ const night=state.night||previewNight;
+ for(const board of foodSigns){
+  if(board.title){
+   signItem(items,board.pos,board.width,signTexture(board.title,board.subtitle||"LỐI RA",board.tint||"#ffd09a"));continue;
+  }
+  const f=board.food,n=night.get(f);
+  const close=Math.hypot(board.pos[0]-cam.x,board.pos[2]-cam.z)<13;
+  const title=f.secret&&!close?"BẾP TRONG HẺM":f.name;
+  const subtitle=n.open?f.secret&&!close?"Nhìn kỹ sau tấm rèm":f.dish+"  ·  "+f.price+"k":"Hôm nay nghỉ bán";
+  signItem(items,board.pos,board.width,signTexture(title,subtitle,f.tint,!n.open),n.open);
+  byShop(f,n,items,now);
+  if(n.open&&Math.hypot(board.pos[0]-cam.x,board.pos[2]-cam.z)<50){
+   for(let i=0;i<4;i++){
+    const t=(now*.39+i/4)%1;
+    const smoke=cameraSpace([board.pos[0]+t*.7+Math.sin(t*8+i)*.20,2.3+t*2.2,board.pos[2]]);
+    if(smoke[2]>1.8)items.push({p:screen(smoke),depth:smoke[2],layer:1,smoke:true,radius:(.12+t*.42)*f/smoke[2],opacity:(1-t)*.16});
+   }
+  }
+ }
+ items.sort((a,b)=>a.layer-b.layer||(a.layer===0?a.y-b.y:0)||b.depth-a.depth);
+ for(const item of items){
+  if(item.sign){
+   const width=item.w,height=width*118/460;
+   if(item.glow&&width>44){ctx.shadowColor="#ffc375";ctx.shadowBlur=Math.min(17,width*.08);}
+   ctx.drawImage(item.img,item.p[0]-width/2,item.p[1]-height/2,width,height);
+   ctx.shadowBlur=0;continue;
+  }
+  if(item.patron){const height=item.w*148/60;ctx.drawImage(item.img,item.p[0]-item.w/2,item.p[1]-height,item.w,height);continue;}
+  if(item.smoke){ctx.fillStyle="rgba(238,232,202,"+item.opacity+")";ctx.beginPath();ctx.arc(...item.p,item.radius,0,tau);ctx.fill();continue;}
+  const p=item.points;
+  ctx.fillStyle=item.shade;ctx.beginPath();ctx.moveTo(...p[0]);for(let i=1;i<p.length;i++)ctx.lineTo(...p[i]);ctx.closePath();ctx.fill();
+ }
+ if(state.mode!=="menu"){
+  const vignette=ctx.createRadialGradient(w*.5,h*.46,Math.min(w,h)*.32,w*.5,h*.48,Math.max(w,h)*.76);
+  vignette.addColorStop(0,"#02080900");vignette.addColorStop(1,"#02080970");
+  ctx.fillStyle=vignette;ctx.fillRect(0,0,w,h);
+ }
+ updateWorldLabels(now);
+}
+const routeOptions = new Map(Object.keys(nodes).map(id=>[id,[]]));
+for(const r of roads){
+ routeOptions.get(r.from).push(r);
+ if(r.from!=="S"&&!exits.has(r.to)){
+  const [x,z]=nodes[r.to];
+  routeOptions.get(r.to).push({...r,from:r.to,to:r.from,x,z,angle:r.angle+Math.PI,reverse:true});
+ }
+}
+const previewNight=makeNight(343119);
+const state={mode:"menu",name:"",gender:"nam",rear:"none",rearName:"",speed:0,cameraAngle:0};
+const keys=new Set();
+const bestScore = foods=>foods.slice().sort((a,b)=>state.night.get(b).score-state.night.get(a).score)[0];
+const roast = [
+ [9.3,"Ngon tới mức muốn gửi lời cảm ơn cho người vừa bật xi nhan."],
+ [8,"Chủ quán hỏi có lấy thêm không. Bạn đã gật đầu trước khi nghe hết câu."],
+ [6.8,"Ăn ổn áp. Chạy vòng vèo nãy giờ, vậy cũng đáng công."],
+ [5.2,"Miếng đầu hơi lạ. Miếng thứ hai xác nhận miếng đầu không nhầm."],
+ [3.9,"Bạn gọi thêm ly nước. Đó là món ngon nhất bàn."],
+ [0,"Có những đêm chiếc AB chạy mượt hơn cách đầu bếp nêm nếm."]
+];
+function setMode(mode){
+ state.mode=mode;document.body.classList.toggle("playing",mode!=="menu");
+ $("start").hidden=mode!=="menu";$("hud").hidden=mode!=="ride";$("controls").hidden=mode!=="ride";
+ $("results").hidden=mode!=="result";$("memory").hidden=mode!=="memory";$("mealControls").hidden=mode!=="stop";keys.clear();
+ document.querySelectorAll(".pedal.active").forEach(b=>b.classList.remove("active"));
+}
+function clearNotice(){state.notice="";state.noticeUntil=0;$("msg").textContent="";}
+function notice(msg,secs=1.7){state.notice=msg;state.noticeUntil=performance.now()+secs*1000;}
+function enterRoad(r){
+ state.road=r;state.visited.add(r.id);state.path.push(r.id);
+ state.dist=0;state.selected=null;state.lane=0;
+}
+function startNight(seed){
+ Object.assign(state,{seed,night:makeNight(seed),visited:new Set(),path:[],seen:new Set(),dist:0,speed:0,lane:0,mapExpanded:false,
+  selected:null,cameraAngle:0,finished:null,missed:null,uiKey:"",shopLook:0,greetingFood:null});
+ enterRoad(roads[0]);state.dist=5;
+ state.position=point(state.road,state.dist);
+ yaw=0;clearNotice();setMode("ride");setMapZoom(false);
+ $("riderName").textContent=state.name+" · AB 160";
+ notice("Nổ máy rồi. Giữ W hoặc Ga để đi.",3);
+}
+function junction(){
+ if(state.mode!=="ride"||state.road.length-state.dist>5)return null;
+ const candidates=routeOptions.get(state.road.to)
+  .filter(r=>!state.visited.has(r.id))
+  .map(r=>({r,angle:rotation(state.road.angle,r.angle)}))
+  .sort((a,b)=>a.angle-b.angle);
+ const directions={a:"Trái",w:"Thẳng",d:"Phải"};
+ const taken=new Set();
+ const options=candidates.map(({r,angle},index)=>{
+  const keyAtAngle=angle<-.52?"a":angle>.52?"d":"w";
+  const key=candidates.length===3?["a","w","d"][index]:
+   taken.has(keyAtAngle)?["w","d","a"].find(key=>!taken.has(key)):keyAtAngle;
+  taken.add(key);
+  return {r,key,name:directions[key]};
+ });
+ return {options,node:state.road.to};
+}
+function foodDistance(food){
+ return (state.road.reverse?1-food.position:food.position)*state.road.length;
+}
+function nearFood(){
+ if(state.mode!=="ride")return null;
+ return menuAt.get(state.road.id).filter(f=>Math.abs(foodDistance(f)-state.dist)<=3.65)
+  .sort((a,b)=>Math.abs(foodDistance(a)-state.dist)-Math.abs(foodDistance(b)-state.dist))[0]||null;
+}
+function choose(r){
+ state.selected=r;
+}
+function eat(){
+ const f=nearFood();
+ if(f&&state.night.get(f).open){
+  state.speed=0;state.mealFrom=performance.now();state.mealStep=0;state.finished=f;
+  state.mealSide=f.side*(state.road.reverse?-1:1);
+  setMode("stop");$("nextLine").textContent="Tiếp lời";$("nextLine").focus();playBell(440);
+ }
+}
+$("nextLine").onclick=()=>{
+ if(state.mode!=="stop")return;
+ if(state.mealStep===2){result(state.finished);return;}
+ state.mealStep++;
+ $("nextLine").textContent=state.mealStep===2?"Thử món":"Tiếp lời";
+};
+function result(food){
+ state.speed=0;
+ const data=food?state.night.get(food):null;
+ const better=menu.filter(f=>f!==food&&state.night.get(f).open&&(!data||state.night.get(f).score>data.score));
+ state.missed=bestScore(better.filter(f=>state.seen.has(f)))||bestScore(better);
+ $("watch").hidden=!state.missed;
+ $("resultLabel").textContent=data?"Bữa ăn tối nay":"Chuyến đi kết thúc";
+ $("mealTitle").textContent=food?food.dish:"Về nhà với bụng đói";
+ $("foodEmoji").textContent=food?.emoji||"🏁";
+ $("mealScore").textContent=data?String(data.score.toFixed(1)).replace(".",",")+" / 10":"";
+ $("review").textContent=data?roast.find(([score])=>data.score>=score)[1]:"Bạn đã đi hết lối này mà chưa chọn quán. Thử một ngã rẽ khác để tìm bữa ăn tiếp theo.";
+ $("receipt").textContent=state.name+" · "+(food?food.name+" · "+food.price+"k · ":"")+state.path.length+" đoạn đường";
+ if(state.missed){
+  const m=state.missed, seen=state.seen.has(m);
+  $("reveal").textContent=(seen?"Quán vừa lỡ: ":"Quán khác tối nay: ")+m.name+" · "+m.road.label+" · "+state.night.get(m).score.toFixed(1).replace(".",",")+"/10";
+ }else $("reveal").textContent="Bạn đã ăn ở một trong những quán ngon nhất phố tối nay.";
+ setMode("result");drawMap($("resultMap"),true);
+ $("newNight").focus();
+}
+function drive(dt){
+ const road=state.road;
+ const turn=junction();
+ if(turn){
+  if(keys.has("a")){const option=turn.options.find(o=>o.key==="a");if(option)choose(option.r);}
+  if(keys.has("d")){const option=turn.options.find(o=>o.key==="d");if(option)choose(option.r);}
+  if(!state.selected&&turn.options.length===1)choose(turn.options[0].r);
+ }
+ const accelerating=keys.has("w")&&!keys.has("s");
+ state.speed=clamp(state.speed+dt*(keys.has("s")?-11:accelerating?4.6:-3.1),0,9.8);
+ const lateral=turn?0:Number(keys.has("d"))-Number(keys.has("a"));
+ state.lane=clamp(state.lane+lateral*dt*1.9,-road.width*.28,road.width*.28);
+ if(!lateral)state.lane*=Math.max(0,1-dt*(turn?5:1.1));
+ state.dist=Math.min(road.length,state.dist+state.speed*dt);
+ const f=nearFood();if(f&&state.night.get(f).open)state.seen.add(f);
+ if(state.dist>=road.length){
+  const next=junction();
+  if(!next.options.length){state.position=point(road,road.length);result(null);return;}
+  if(!state.selected){state.speed=0;}
+  else if(accelerating){enterRoad(state.selected);notice(state.road.label,1.5);}
+  else state.speed=0;
+ }
+ state.position=point(state.road,state.dist,state.lane);
+ state.cameraAngle+=rotation(state.cameraAngle,state.road.angle)*Math.min(1,dt*7);
+}
+function setMapZoom(expanded){
+ state.mapExpanded=expanded;
+ $("minimap").parentElement.classList.toggle("expanded",expanded);
+ $("mapZoom").setAttribute("aria-pressed",String(expanded));
+ $("mapZoom").textContent=expanded?"Thu bản đồ":"Xem cả khu";
+ const map=$("minimap");
+ map.width=expanded?760:310;map.height=expanded?760:292;
+}
+$("mapZoom").onclick=()=>setMapZoom(!state.mapExpanded);
+function drawMap(el,isFull=false){
+ const c=el.getContext("2d"),w=el.width,h=el.height;
+ c.clearRect(0,0,w,h);
+ const overview=isFull||state.mapExpanded;
+ const [px,,pz]=state.position;
+ const scale=overview?Math.min((w-48)/253,(h-20)/240):Math.min(w,h)/100;
+ const x0=w*.5-(overview?1.5:px)*scale;
+ const z0=overview?(h+229*scale)*.5:h*.54+pz*scale;
+ const coords=(x,z)=>[x0+x*scale,z0-z*scale];
+ c.lineCap="round";c.lineJoin="round";
+ const [wx,wz]=coords(-145,193.4);
+ c.fillStyle="#263e47";c.fillRect(wx,wz,290*scale,19*scale);
+ const labels=[["market",-81,45],["alley",-104,118],["old",52,42],["lantern",90,115],["canal",-26,184]];
+ if(state.mapExpanded&&!isFull){
+  c.font="700 22px system-ui";
+  for(const [zone,x,z] of labels){
+   c.fillStyle=districts[zone].map;c.textAlign="center";
+   c.fillText(districts[zone].name,...coords(x,z));
+  }
+ }
+ for(const r of roads){
+  const [x,z]=nodes[r.from],[x2,z2]=nodes[r.to], used=state.visited.has(r.id);
+  c.strokeStyle=used?"#f89464":districts[r.zone].map+(overview?"95":"b0");
+  c.lineWidth=used?(overview?5:7):3;
+  c.beginPath();c.moveTo(...coords(x,z));c.lineTo(...coords(x2,z2));c.stroke();
+ }
+ for(const id of exits){
+  const [x,z]=coords(...nodes[id]);c.fillStyle="#dfdfc5";c.fillRect(x-3,z-3,6,6);
+ }
+ if(isFull&&state.missed){
+  const f=state.missed, [x,,z]=point(f.road,f.road.length*f.position);
+  c.fillStyle="#f7da91";c.beginPath();c.arc(...coords(x,z),5,0,tau);c.fill();
+ }
+ c.fillStyle="#dffd91";c.beginPath();c.arc(...coords(px,pz),overview?5:8,0,tau);c.fill();
+}
+function updateHUD(){
+ $("speed").textContent=Math.round(state.speed*3.6);
+ $("roadName").textContent=state.road.label+" · "+districts[state.road.zone].name;
+ $("msg").textContent=performance.now()<state.noticeUntil?state.notice:"";
+ drawMap($("minimap"));
+ const next=junction(),food=nearFood(),data=food?state.night.get(food):null;
+ const id=next?"turn"+next.node+(state.selected?.id||""):food?"food"+food.name:"";
+ if(id===state.uiKey)return;
+ state.uiKey=id;$("action").hidden=!id;
+ $("options").replaceChildren();
+ if(next){
+  $("actionTitle").textContent=next.options.length?"Chọn lối ở ngã rẽ":"Hết đường";
+  $("actionDesc").textContent=next.options.length?(state.selected?"Lên ga để vào "+state.selected.label+".":"Chọn một lối còn mở rồi lên ga."):"Bạn đã tới lối ra hoặc các đường nối đều đã được đi.";
+  next.options.forEach(o=>{
+   const button=document.createElement("button");
+   button.type="button";button.className="branch"+(o.r===state.selected?" on":"");
+   button.textContent=o.name+" · "+o.r.label;
+   button.onclick=()=>choose(o.r);$("options").append(button);
+  });
+ }else if(food){
+  $("actionTitle").textContent=food.name;
+  $("actionDesc").textContent=data.open?food.dish+" · "+food.price+"k. "+data.clue:"Cửa đóng. Hôm nay quán nghỉ bán.";
+  if(data.open){
+   const button=document.createElement("button");
+   button.type="button";button.className="primary";button.textContent="Tấp vô ăn";button.onclick=eat;$("options").append(button);
+  }
+ }
+}
+const inputMap={arrowup:"w",arrowdown:"s",arrowleft:"a",arrowright:"d",w:"w",a:"a",s:"s",d:"d",e:"e"};
+addEventListener("keydown",event=>{
+ if(state.mode!=="ride"||!$("instructions").hidden)return;
+ const key=inputMap[event.key.toLowerCase()];
+ if(!key)return;
+ event.preventDefault();keys.add(key);
+ if(key==="e")eat();
+ if(key==="w"&&!event.repeat&&!state.selected){
+  const straight=junction()?.options.find(o=>o.key==="w");if(straight)choose(straight.r);
+ }
+});
+addEventListener("keyup",event=>keys.delete(inputMap[event.key.toLowerCase()]));
+addEventListener("blur",()=>keys.clear());
+document.querySelectorAll(".pedal").forEach(b=>{
+ const key=b.dataset.key;
+ b.addEventListener("pointerdown",event=>{
+  event.preventDefault();b.setPointerCapture(event.pointerId);b.classList.add("active");keys.add(key);
+  if(key==="w"&&!state.selected){
+   const straight=junction()?.options.find(o=>o.key==="w");if(straight)choose(straight.r);
+  }
+ });
+ ["pointerup","pointercancel","lostpointercapture"].forEach(eventName=>b.addEventListener(eventName,()=>{keys.delete(key);b.classList.remove("active");}));
+});
+let drag=null;
+canvas.addEventListener("pointerdown",e=>{if(state.mode!=="ride")return;canvas.setPointerCapture(e.pointerId);drag={id:e.pointerId,x:e.clientX};});
+canvas.addEventListener("pointermove",e=>{if(drag?.id!==e.pointerId)return;yaw=clamp(yaw-(e.clientX-drag.x)*.007,-1.08,1.08);drag.x=e.clientX;});
+["pointerup","pointercancel","lostpointercapture"].forEach(name=>canvas.addEventListener(name,()=>{drag=null;}));
+document.querySelectorAll("[data-gender]").forEach(b=>b.onclick=()=>{
+ state.gender=b.dataset.gender;
+ document.querySelectorAll("[data-gender]").forEach(button=>button.setAttribute("aria-pressed",String(button===b)));
+});
+for(const [type,profile] of Object.entries(companions)){
+ const button=document.createElement("button");
+ button.type="button";button.className="choice";button.textContent=profile.label;
+ button.setAttribute("aria-pressed",String(type===state.rear));
+ button.onclick=()=>{
+  state.rear=type;$("rearField").hidden=type==="none";
+  $("rearName").placeholder=profile.name;
+  for(const option of $("companionOptions").children)option.setAttribute("aria-pressed",String(option===button));
+ };
+ $("companionOptions").append(button);
+}
+$("name").addEventListener("input",()=>{state.name=$("name").value.trim();});
+$("rearName").addEventListener("input",()=>{state.rearName=$("rearName").value.trim();});
+$("profile").onsubmit=e=>{
+ e.preventDefault();state.name=$("name").value.trim()||"Khách Đói";
+ state.rearName=$("rearName").value.trim();startNight(freshSeed());
+};
+$("help").onclick=()=>{keys.clear();$("instructions").hidden=false;$("closeHelp").focus();};
+$("closeHelp").onclick=()=>{$("instructions").hidden=true;$("help").focus();};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("instructions").hidden)$("closeHelp").click();});
+$("watch").onclick=()=>{
+ const f=state.missed;
+ if(!f)return;
+ state.memoryFrom=performance.now();
+ $("memoryTitle").textContent=f.name+" · "+f.road.label;
+ setMode("memory");$("endMemory").focus();
+};
+$("endMemory").onclick=()=>{setMode("result");$("watch").focus();};
+$("sameNight").onclick=()=>startNight(state.seed);
+$("newNight").onclick=()=>startNight(freshSeed());
+$("edit").onclick=()=>{yaw=0;setMode("menu");$("name").focus();};
+let audio=null, motor=null, volume=null, muted=true;
+$("sound").onclick=async ()=>{
+ if(!audio){
+  const Audio=window.AudioContext||window.webkitAudioContext;
+  if(!Audio)return;
+  audio=new Audio();motor=audio.createOscillator();motor.type="triangle";
+  volume=audio.createGain();volume.gain.value=0;
+  const filter=audio.createBiquadFilter();filter.type="lowpass";filter.frequency.value=165;
+  motor.connect(filter).connect(volume).connect(audio.destination);motor.start();
+ }
+ muted=!muted;await audio.resume();
+ $("sound").setAttribute("aria-pressed",String(!muted));$("sound").textContent=muted?"Bật tiếng":"Tắt tiếng";
+};
+function playBell(freq){
+ if(!audio||muted)return;
+ const oscillator=audio.createOscillator(), gain=audio.createGain(),now=audio.currentTime;
+ oscillator.frequency.value=freq;gain.gain.setValueAtTime(.07,now);gain.gain.exponentialRampToValueAtTime(.001,now+.32);
+ oscillator.connect(gain).connect(audio.destination);oscillator.start(now);oscillator.stop(now+.33);
+}
+let last=0;
+function loop(ms){
+ const dt=Math.min(.05,(ms-last)/1000);last=ms;
+ if(state.mode==="menu"){
+  const pos=[1.0,0,9.8];const angle=-.27;
+  makeRider(pos,angle,state.gender,ms);
+  cam={x:lerp(-.18,-.43,(Math.sin(ms*.00026)+1)/2),z:4.35,y:2.29,angle:-.025};
+ }else if(state.mode==="memory"){
+  const f=state.missed,elapsed=clamp((ms-state.memoryFrom)/4200,0,1);
+  const distance=f.road.length*f.position;
+  const eye=point(f.road,distance-10+8*elapsed,-f.side*1.7,2.97);
+  const [x,,z]=point(f.road,distance,f.side*(f.road.width*.5+1.1));
+  cam={x:eye[0],y:eye[1],z:eye[2],angle:Math.atan2(x-eye[0],z-eye[2])};
+  rider.length=0;
+  if(elapsed===1)$("endMemory").click();
+ }else{
+  if(state.mode==="ride"&&$("instructions").hidden)drive(dt);
+  const stop=state.finished?clamp((ms-state.mealFrom)/720,0,1):0;
+  if(!drag)yaw*=Math.max(0,1-dt*.85);
+  const angle=state.cameraAngle, pos=state.position;
+  const lean=state.mealSide*stop||0;
+  const riderPos=[pos[0]+Math.cos(angle)*lean*.82,0,pos[2]-Math.sin(angle)*lean*.82];
+  const tilt=state.mode==="ride"?clamp(rotation(angle,state.road.angle)*.31,-.16,.16):0;
+  makeRider(riderPos,angle+lean*.40,state.gender,ms,tilt);
+  const cos=Math.cos(angle),sin=Math.sin(angle),distance=4.85+state.speed*.09;
+  const side=state.rear==="none"?.27:.65;
+  cam={x:pos[0]-sin*distance-cos*side,z:pos[2]-cos*distance+sin*side,y:2.53,angle:angle+yaw};
+  if(state.mode==="stop"){
+   const food=state.finished,road=food.road,d=road.length*food.position;
+   const t=stop*stop*(3-2*stop);
+   const eye=point(road,d-3.75,-food.side*(road.width*.16+.56),2.14);
+   const target=vendorPoint(food,state.mealStep===1?1:0);
+   const facing=Math.atan2(target[0]-eye[0],target[2]-eye[2]);
+   cam={x:lerp(cam.x,eye[0],t),z:lerp(cam.z,eye[2],t),y:lerp(cam.y,eye[1],t),angle:cam.angle+rotation(cam.angle,facing)*t};
+  }else if(state.mode==="ride"){
+   const f=nearFood();
+   const glance=f&&state.speed<2.3&&!drag&&Math.abs(yaw)<.16;
+   const target=glance?f.side*(state.road.reverse?-1:1)*.39:0;
+   state.shopLook=lerp(state.shopLook||0,target,dt*4);
+   cam.angle+=state.shopLook;
+  }
+  if(state.mode==="ride")updateHUD();
+ }
+ if(audio){
+  motor.frequency.setTargetAtTime(35+state.speed*8,audio.currentTime,.13);
+  volume.gain.setTargetAtTime(!muted&&state.mode==="ride"&&$("instructions").hidden?.017+state.speed*.004:0,audio.currentTime,.12);
+ }
+ drawScene();requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
